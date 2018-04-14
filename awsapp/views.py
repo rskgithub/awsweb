@@ -17,7 +17,7 @@ from django.core.files.storage import default_storage
 from django.contrib.auth.hashers import check_password
 from .forms import S3FileUploadForm
 import os
-from .utils import upload_to_s3
+from .utils import upload_to_s3,list_all_buckets
 
 
 # Create your views here.
@@ -30,7 +30,7 @@ class S3FileUploadView(TemplateView):
                         self).get_context_data(**kwargs)
         s3_form = S3FileUploadForm()
         context.update({"s3_form": s3_form})
-        print(os.environ['AWS_ACCESS_KEY_ID'])
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -38,7 +38,8 @@ class S3FileUploadView(TemplateView):
         if s3_form.is_valid():
             # The uploaded file
             s3_file = request.FILES.get('s3_file')
-            upload_to_s3(s3_file, "intuitorit")
+            bucket_name = request.POST.get('bucket_list')
+            upload_to_s3(s3_file, bucket_name)
 
             return render(request, "awsapp/s3_bucket_file_upload.html")
 
