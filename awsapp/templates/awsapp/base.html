@@ -1,0 +1,25 @@
+{% load static from staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <title>AWS WEB</title>
+  {% include 'awsapp/static.html' %}
+
+</head>
+
+<body>
+{% include 'awsapp/navbar.html' %}
+
+  {% block content %}
+    <div class="container-fluid">
+
+    </div>
+  {% endblock %}
+
+</body>
+
+
+
+
+</html>
