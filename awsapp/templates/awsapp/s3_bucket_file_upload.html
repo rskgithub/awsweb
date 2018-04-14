@@ -4,7 +4,7 @@
 <div class="container">
 <h3>Upload File to S3 Bucket</h3>
 
-    <form method="post" action="#" enctype = "multipart/form-data" class="form-horizontal">
+    <form method="post" action="{% url 'awsapp:s3-file-upload' %}" enctype = "multipart/form-data" class="form-horizontal">
                             {% csrf_token %}
                             {{ s3_form.as_p }}
 
