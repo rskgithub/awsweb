@@ -11,3 +11,7 @@ class S3FileUploadForm(forms.Form):
     bucket_list = forms.ChoiceField(
         choices=list_all_buckets(), label="Select a Bucket", required=True)
     s3_file = forms.FileField(label="Upload a File to S3 Bucket", required=True)
+
+
+class S3NewBucketForm(forms.Form):
+    bucket_name = forms.CharField(label="Bucket Name", required=True)

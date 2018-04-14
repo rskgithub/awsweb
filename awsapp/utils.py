@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import ClientError
 import os
 
 
@@ -56,7 +57,25 @@ def upload_to_s3(file, bucket_name, acl="public-read"):
                 "ContentType": file.content_type
             }
         )
+        return True
 
     except Exception as e:
         print("Something Happened: ", e)
         return e
+
+
+def create_s3_bucket(bucket_name):
+    """
+    Function is used for creating a bucket
+    :param bucket_name: String
+    :return:
+    """
+    try:
+
+        client = get_aws_client()
+        client.create_bucket(Bucket=bucket_name)
+
+        return True
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'BucketAlreadyExists':
+            return False

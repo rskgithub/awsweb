@@ -15,9 +15,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission, User
 from django.core.files.storage import default_storage
 from django.contrib.auth.hashers import check_password
-from .forms import S3FileUploadForm
+from .forms import S3FileUploadForm, S3NewBucketForm
 import os
-from .utils import upload_to_s3,list_all_buckets
+from .utils import upload_to_s3, create_s3_bucket
+
+AWS_BASE_URL = "https://s3.amazonaws.com/"
 
 
 # Create your views here.
@@ -29,7 +31,8 @@ class S3FileUploadView(TemplateView):
         context = super(S3FileUploadView,
                         self).get_context_data(**kwargs)
         s3_form = S3FileUploadForm()
-        context.update({"s3_form": s3_form})
+        s3_new_bucket = S3NewBucketForm()
+        context.update({"s3_form": s3_form, "new_bucket": s3_new_bucket, "status": False})
 
         return context
 
@@ -39,11 +42,42 @@ class S3FileUploadView(TemplateView):
             # The uploaded file
             s3_file = request.FILES.get('s3_file')
             bucket_name = request.POST.get('bucket_list')
-            upload_to_s3(s3_file, bucket_name)
-
-            return render(request, "awsapp/s3_bucket_file_upload.html")
+            status = upload_to_s3(s3_file, bucket_name)
+            context = {"file_url": AWS_BASE_URL + bucket_name + "/" + s3_file.name}
+            context.update({"status": status})
+            return render(request, "awsapp/s3_bucket_file_upload.html", context)
 
         else:
             s3_form = S3FileUploadForm()
-            context = {"s3_form": s3_form}
+            context = {"s3_form": s3_form, "status": False}
             return render(request, "awsapp/s3_bucket_file_upload.html", context)
+
+
+def create_bucket(request):
+    """
+    Function based view used to create new bucket
+    :param request:
+    :return:
+    """
+    s3_new_bucket = S3NewBucketForm(request.POST)
+
+    if s3_new_bucket.is_valid():
+        bucket_name = request.POST.get('bucket_name')
+
+        bucket_status = create_s3_bucket(bucket_name)
+
+        context = {"bucket_status": bucket_status, "status": False}
+
+        s3_form = S3FileUploadForm()
+        s3_new_bucket = S3NewBucketForm()
+        context.update({"s3_form": s3_form, "new_bucket": s3_new_bucket})
+
+        return render(request, "awsapp/s3_bucket_file_upload.html", context)
+
+    else:
+        s3_form = S3FileUploadForm()
+        s3_new_bucket = S3NewBucketForm()
+        context = {}
+        context.update({"s3_form": s3_form, "new_bucket": s3_new_bucket, "bucket_status": False})
+
+        return render(request, "awsapp/s3_bucket_file_upload.html", context)

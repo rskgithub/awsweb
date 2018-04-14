@@ -118,3 +118,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = MEDIA_DIR
+AWS_BASE_URL = "https://s3.amazonaws.com/"
