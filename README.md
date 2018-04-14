@@ -13,5 +13,8 @@ This tutorial assumes the AWS credentials are stored in the Environment variable
 Edit the .bashrc file using any of your favourite editor and add the following lines:
 
 export AWS_ACCESS_KEY_ID=access_key
+
 export AWS_SECRET_ACCESS_KEY=access_secret_key
+
 export AWS_DEFAULT_REGION=default_region
+
